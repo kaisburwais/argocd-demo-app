@@ -1,0 +1,44 @@
+name: Build and Push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/argocd-demo-app:${{ github.sha }}
+
+      - name: Checkout manifests repo
+        uses: actions/checkout@v4
+        with:
+          repository: <you>/argocd-demo-manifests
+          token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
+          path: manifests
+
+      - name: Update image tag
+        run: |
+          cd manifests
+          sed -i "s|image:.*|image: ghcr.io/${{ github.repository_owner }}/argocd-demo-app:${{ github.sha }}|" deployment.yaml
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git commit -am "Update image to ${{ github.sha }}" || echo "no changes"
+          git push

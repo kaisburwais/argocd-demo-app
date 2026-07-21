@@ -30,8 +30,8 @@ jobs:
       - name: Checkout manifests repo
         uses: actions/checkout@v4
         with:
-          repository: kaisburwais/argocd-demo-manifests
-          token: ${{ secrets.MANIFEST_REPO_TOKEN }}
+          repository: <you>/argocd-demo-manifests
+          token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
           path: manifests
 
       - name: Update image tag

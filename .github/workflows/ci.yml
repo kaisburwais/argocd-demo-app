@@ -30,7 +30,7 @@ jobs:
       - name: Checkout manifests repo
         uses: actions/checkout@v4
         with:
-          repository: <you>/argocd-demo-manifests
+          repository: kaisburwais/argocd-demo-manifests
           token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
           path: manifests
 
